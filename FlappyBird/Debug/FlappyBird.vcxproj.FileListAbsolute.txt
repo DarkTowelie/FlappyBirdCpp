@@ -1,0 +1,3 @@
+K:\VS CPP\FlappyBird\FlappyBird\Debug\FlappyBird.vcxprojAssemblyReference.cache
+K:\VS CPP\FlappyBird\FlappyBird\Debug\FlappyBird.Form1.resources
+K:\VS CPP\FlappyBird\FlappyBird\Debug\FlappyBird.vcxproj.GenerateResource.cache

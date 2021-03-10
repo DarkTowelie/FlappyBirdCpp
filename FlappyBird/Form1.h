@@ -33,22 +33,7 @@ namespace CppCLRWinformsProjekt {
 		pipe2 = Pipe(600, -pipeShift);
 	}
 
-	void refreshScore()
-	{
-		if (bird.X() > pipe1.X() + pipe1.SpriteSizeX() && !pipe1.passed)
-		{
-			score++;
-			pipe1.passed = true;
-		}
-
-		if (bird.X() > pipe2.X() + pipe2.SpriteSizeX() && !pipe2.passed)
-		{
-			score++;
-			pipe2.passed = true;
-		}
-	}
-
-	void CreateWall()
+	void createPipe()
 	{
 		float newY = -pipeShift + rand() % 200 - 100;
 
@@ -63,7 +48,7 @@ namespace CppCLRWinformsProjekt {
 		}
 	}
 
-	bool CheckGameOver(Pipe pipe)
+	bool checkGameOver(Pipe pipe)
 	{
 		float birdLBound = bird.X();
 		float birdRBound = bird.X() + bird.SpriteSize();
@@ -93,7 +78,7 @@ namespace CppCLRWinformsProjekt {
 		}
 	}
 
-	bool CheckGameOver()
+	bool checkGameOver()
 	{
 		if (bird.Y() > 500)
 			return true;
@@ -131,13 +116,13 @@ namespace CppCLRWinformsProjekt {
 		{
 			if (!gameOver)
 			{
-				this->Text = "Score:";
+				this->Text = "Score: " + Convert::ToString(score);
 				bird.fall(gravityValue);
 				pipe1.Move();
 				pipe2.Move();
-				CreateWall();
+				createPipe();
 
-				if (CheckGameOver(pipe1) || CheckGameOver(pipe2) || CheckGameOver())
+				if (checkGameOver(pipe1) || checkGameOver(pipe2) || checkGameOver())
 					gameOver = true;
 
 				updateScore();
@@ -149,6 +134,21 @@ namespace CppCLRWinformsProjekt {
 			}
 		}
 		
+		void controll()
+		{
+			if (!gameOver)
+			{
+				bird.jump();
+			}
+			else
+				init();
+			if (!timer1->Enabled)
+			{
+				timer1->Start();
+				timer1->Interval = 10;
+				bird.jump();
+			}
+		}
 
 	public:
 		Form1(void)
@@ -185,8 +185,9 @@ namespace CppCLRWinformsProjekt {
 			this->DoubleBuffered = true;
 			this->Name = L"Form1";
 			this->Text = L"FlappyBird";
-			this->Click += gcnew System::EventHandler(this, &Form1::Form1_Click);
 			this->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &Form1::Form1_Paint);
+			this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &Form1::Form1_KeyDown);
+			this->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &Form1::Form1_MouseDown);
 			this->ResumeLayout(false);
 
 		}
@@ -204,22 +205,20 @@ namespace CppCLRWinformsProjekt {
 		graphics->DrawImage(pipeTopSprite, pipe2.X(), pipe2.Y(), pipe2.SpriteSizeX(), pipe2.SpriteSizeY());
 		graphics->DrawImage(pipeBottomSprite, pipe2.X(), pipe2.Y() + pipe2.SpriteSizeY() + pipe2.WindowSize(), pipe2.SpriteSizeX(), pipe2.SpriteSizeY());
 	}
-	private: System::Void Form1_Click(System::Object^ sender, System::EventArgs^ e) {
-		if (!gameOver)
-		{
-			bird.jump();
-		}
-		else
-			init();
-		if (!timer1->Enabled)
-		{
-			timer1->Start();
-			timer1->Interval = 10;
-			bird.jump();
-		}
-	}
+
 	private: System::Void timer1_Tick(System::Object^ sender, System::EventArgs^ e) {
 		update();
+	}
+
+	private: System::Void Form1_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+		controll();
+	}
+
+	private: System::Void Form1_KeyDown(System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e) {
+		if (e->KeyValue == 32 || e->KeyValue == 38)
+		{
+			controll();
+		}
 	}
 };
 }
